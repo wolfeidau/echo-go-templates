@@ -1,4 +1,4 @@
-GOLANGCI_VERSION = 1.42.1
+GOLANGCI_VERSION = 1.50.1
 
 BIN_DIR ?= $(shell pwd)/bin
 
@@ -8,7 +8,7 @@ ci: lint test
 $(BIN_DIR)/golangci-lint: $(BIN_DIR)/golangci-lint-${GOLANGCI_VERSION}
 	@ln -sf golangci-lint-${GOLANGCI_VERSION} $(BIN_DIR)/golangci-lint
 $(BIN_DIR)/golangci-lint-${GOLANGCI_VERSION}:
-	@curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | BINARY=golangci-lint bash -s -- v${GOLANGCI_VERSION}
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | BINARY=golangci-lint bash -s -- v${GOLANGCI_VERSION}
 	@mv $(BIN_DIR)/golangci-lint $@
 
 .PHONY: lint
