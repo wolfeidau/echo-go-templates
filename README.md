@@ -1,4 +1,4 @@
-# hotwire-golang-website
+# echo-go-templates
 
 This project provides some template helpers with the Go [IOFS](https://pkg.go.dev/io/fs) and [HTML templates](https://pkg.go.dev/html/template) packages for use with [echo](https://echo.labstack.com).
 
