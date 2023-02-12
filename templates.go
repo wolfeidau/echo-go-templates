@@ -62,6 +62,29 @@ func (t *TemplateRenderer) AddWithLayout(fsys fs.FS, layout string, patterns ...
 	return nil
 }
 
+// AddWithLayoutAndIncludes register one or more templates using the provided layout and includes
+func (t *TemplateRenderer) AddWithLayoutAndIncludes(fsys fs.FS, layout string, includes string, patterns ...string) error {
+	filenames, err := readFileNames(fsys, patterns...)
+	if err != nil {
+		return errors.Wrap(err, "failed to list using file pattern")
+	}
+
+	for _, f := range filenames {
+
+		tname := path.Base(f)
+		lname := path.Base(layout)
+
+		log.Debug().Str("filename", tname).Str("layout", layout).Msg("register template")
+		t.templates[tname] = &Template{
+			layout:   lname,
+			name:     tname,
+			template: template.Must(template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, includes, f)),
+		}
+	}
+
+	return nil
+}
+
 // Add add a template to the registry
 func (t *TemplateRenderer) Add(fsys fs.FS, patterns ...string) error {
 	filenames, err := readFileNames(fsys, patterns...)
