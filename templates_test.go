@@ -16,7 +16,7 @@ func Test_AddWithLayoutAndIncludes(t *testing.T) {
 	assert := require.New(t)
 
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
 	rec := httptest.NewRecorder()
 
 	render := templates.New()
@@ -39,7 +39,7 @@ func Test_Add(t *testing.T) {
 	assert := require.New(t)
 
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
 	rec := httptest.NewRecorder()
 
 	render := templates.New()

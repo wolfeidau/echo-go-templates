@@ -20,26 +20,26 @@ var templateFuncs = template.FuncMap{
 	},
 }
 
-// Template stores the meta data for each template, and whether it uses a layout
+// Template stores the meta data for each template, and whether it uses a layout.
 type Template struct {
 	layout   string
 	name     string
 	template *template.Template
 }
 
-// TemplateRenderer is a custom html/template renderer for Echo framework
+// TemplateRenderer is a custom html/template renderer for Echo framework.
 type TemplateRenderer struct {
 	templates map[string]*Template
 }
 
-// New setup a new template renderer
+// New setup a new template renderer.
 func New() *TemplateRenderer {
 	return &TemplateRenderer{
 		templates: make(map[string]*Template),
 	}
 }
 
-// AddWithLayout register one or more templates using the provided layout
+// AddWithLayout register one or more templates using the provided layout.
 func (t *TemplateRenderer) AddWithLayout(fsys fs.FS, layout string, patterns ...string) error {
 	filenames, err := readFileNames(fsys, patterns...)
 	if err != nil {
@@ -62,8 +62,8 @@ func (t *TemplateRenderer) AddWithLayout(fsys fs.FS, layout string, patterns ...
 	return nil
 }
 
-// AddWithLayoutAndIncludes register one or more templates using the provided layout and includes
-func (t *TemplateRenderer) AddWithLayoutAndIncludes(fsys fs.FS, layout string, includes string, patterns ...string) error {
+// AddWithLayoutAndIncludes register one or more templates using the provided layout and includes.
+func (t *TemplateRenderer) AddWithLayoutAndIncludes(fsys fs.FS, layout, includes string, patterns ...string) error {
 	filenames, err := readFileNames(fsys, patterns...)
 	if err != nil {
 		return errors.Wrap(err, "failed to list using file pattern")
@@ -85,7 +85,7 @@ func (t *TemplateRenderer) AddWithLayoutAndIncludes(fsys fs.FS, layout string, i
 	return nil
 }
 
-// Add add a template to the registry
+// Add add a template to the registry.
 func (t *TemplateRenderer) Add(fsys fs.FS, patterns ...string) error {
 	filenames, err := readFileNames(fsys, patterns...)
 	if err != nil {
@@ -105,9 +105,8 @@ func (t *TemplateRenderer) Add(fsys fs.FS, patterns ...string) error {
 	return nil
 }
 
-// Render renders a template document
+// Render renders a template document.
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-
 	log.Ctx(c.Request().Context()).Debug().Str("name", name).Msg("Render")
 
 	tmpl, ok := t.templates[name]
