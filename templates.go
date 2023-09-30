@@ -52,10 +52,16 @@ func (t *TemplateRenderer) AddWithLayout(fsys fs.FS, layout string, patterns ...
 		lname := path.Base(layout)
 
 		log.Debug().Str("filename", tname).Str("layout", layout).Msg("register template")
+
+		tmp, err := template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, f)
+		if err != nil {
+			return errors.Wrapf(err, "failed to parse template %s", f)
+		}
+
 		t.templates[tname] = &Template{
 			layout:   lname,
 			name:     tname,
-			template: template.Must(template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, f)),
+			template: tmp,
 		}
 	}
 
@@ -75,10 +81,16 @@ func (t *TemplateRenderer) AddWithLayoutAndIncludes(fsys fs.FS, layout, includes
 		lname := path.Base(layout)
 
 		log.Debug().Str("filename", tname).Str("layout", layout).Msg("register template")
+
+		tmp, err := template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, includes, f)
+		if err != nil {
+			return errors.Wrapf(err, "failed to parse template %s", f)
+		}
+
 		t.templates[tname] = &Template{
 			layout:   lname,
 			name:     tname,
-			template: template.Must(template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, includes, f)),
+			template: tmp,
 		}
 	}
 
@@ -96,9 +108,15 @@ func (t *TemplateRenderer) Add(fsys fs.FS, patterns ...string) error {
 		tname := path.Base(f)
 
 		log.Debug().Str("filename", tname).Msg("register message")
+
+		tmp, err := template.New(tname).Funcs(templateFuncs).ParseFS(fsys, f)
+		if err != nil {
+			return errors.Wrapf(err, "failed to parse template %s", f)
+		}
+
 		t.templates[tname] = &Template{
 			name:     tname,
-			template: template.Must(template.New(tname).Funcs(templateFuncs).ParseFS(fsys, f)),
+			template: tmp,
 		}
 	}
 
