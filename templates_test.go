@@ -12,6 +12,29 @@ import (
 	"github.com/wolfeidau/echo-go-templates/test/views"
 )
 
+func Test_AddWithLayout(t *testing.T) {
+	assert := require.New(t)
+
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
+	rec := httptest.NewRecorder()
+
+	render := templates.New()
+
+	err := render.AddWithLayout(views.Content, "layout2.html", "pages/*.html")
+	assert.NoError(err)
+
+	output := bytes.NewBufferString("")
+
+	c := e.NewContext(req, rec)
+
+	err = render.Render(output, "index.html", nil, c)
+	assert.NoError(err)
+
+	assert.Equal("layout index ", output.String())
+	assert.Equal(200, rec.Result().StatusCode)
+}
+
 func Test_AddWithLayoutAndIncludes(t *testing.T) {
 	assert := require.New(t)
 
