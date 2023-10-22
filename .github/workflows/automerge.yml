@@ -1,5 +1,12 @@
 name: Dependabot auto-merge dev dependencies
-on: pull_request
+
+on:
+  workflow_run:
+    workflows: ["Go"]
+    types: 
+      - completed
+    branches-ignore:
+      - "master"
 
 permissions:
   contents: write
@@ -8,7 +15,8 @@ permissions:
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    needs: Build
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Dependabot metadata
         id: metadata
@@ -16,7 +24,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Enable auto-merge for Dependabot PRs
-        if: ${{contains(steps.metadata.outputs.dependency-type, 'direct:development') && steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
+        if: ${{steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
