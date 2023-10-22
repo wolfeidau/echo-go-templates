@@ -14,7 +14,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var templateFuncs = template.FuncMap{
+var defaultTemplateFuncs = template.FuncMap{
 	"getTime": func() string {
 		return time.Now().Format("15:04:05")
 	},
@@ -29,13 +29,23 @@ type Template struct {
 
 // TemplateRenderer is a custom html/template renderer for Echo framework.
 type TemplateRenderer struct {
-	templates map[string]*Template
+	templates     map[string]*Template
+	templateFuncs template.FuncMap
 }
 
 // New setup a new template renderer.
 func New() *TemplateRenderer {
 	return &TemplateRenderer{
-		templates: make(map[string]*Template),
+		templates:     make(map[string]*Template),
+		templateFuncs: defaultTemplateFuncs,
+	}
+}
+
+// NewWithTemplateFuncs setup a new template renderer with custom template functions.
+func NewWithTemplateFuncs(templateFuncs template.FuncMap) *TemplateRenderer {
+	return &TemplateRenderer{
+		templates:     make(map[string]*Template),
+		templateFuncs: templateFuncs,
 	}
 }
 
@@ -53,7 +63,7 @@ func (t *TemplateRenderer) AddWithLayout(fsys fs.FS, layout string, patterns ...
 
 		log.Debug().Str("filename", tname).Str("layout", layout).Msg("register template")
 
-		tmp, err := template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, f)
+		tmp, err := template.New(tname).Funcs(t.templateFuncs).ParseFS(fsys, layout, f)
 		if err != nil {
 			return errors.Wrapf(err, "failed to parse template %s", f)
 		}
@@ -82,7 +92,7 @@ func (t *TemplateRenderer) AddWithLayoutAndIncludes(fsys fs.FS, layout, includes
 
 		log.Debug().Str("filename", tname).Str("layout", layout).Msg("register template")
 
-		tmp, err := template.New(tname).Funcs(templateFuncs).ParseFS(fsys, layout, includes, f)
+		tmp, err := template.New(tname).Funcs(t.templateFuncs).ParseFS(fsys, layout, includes, f)
 		if err != nil {
 			return errors.Wrapf(err, "failed to parse template %s", f)
 		}
@@ -109,7 +119,7 @@ func (t *TemplateRenderer) Add(fsys fs.FS, patterns ...string) error {
 
 		log.Debug().Str("filename", tname).Msg("register message")
 
-		tmp, err := template.New(tname).Funcs(templateFuncs).ParseFS(fsys, f)
+		tmp, err := template.New(tname).Funcs(t.templateFuncs).ParseFS(fsys, f)
 		if err != nil {
 			return errors.Wrapf(err, "failed to parse template %s", f)
 		}
