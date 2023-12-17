@@ -2,11 +2,11 @@ package templates
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"io/fs"
 	"net/http"
 	"path"
-	"text/template"
 	"time"
 
 	"github.com/labstack/echo/v4"
